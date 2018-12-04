@@ -1,0 +1,7 @@
+*.log
+*.pyc
+data/
+embeddings/
+src/baseline/
+result/
+src/__pycache__/
