@@ -2,7 +2,7 @@ import sys, os
 import numpy as np
 import subprocess
 from collections import namedtuple
-import utils
+from . import utils
 
 
 def deepwalk(dataset_name, embedding_size, input_filename, output_dir, **kargs):

@@ -1,5 +1,4 @@
 import numpy as np
-import utils
 import os
 import collections
 import random
@@ -10,6 +9,8 @@ from sklearn.multiclass import OneVsRestClassifier
 from sklearn.preprocessing import MultiLabelBinarizer
 from scipy.sparse import csr_matrix
 from functools import reduce
+
+from . import utils
 
 def sampling_edges(G, sampling, G_test=None):
     recon_flag = (G_test is None)
@@ -193,12 +194,16 @@ def test(task, evalution, dataset, embedding_filenames, save_filename=None, **ar
         res = link_predict(edges, labels, embedding_filenames, evalution, sampling, args)
     elif task == 'classification':
         args = utils.set_default(args, {'radio': 0.8})
-        label_name = os.path.join('data', dataset, '{}_label.txt'.format(dataset))
+        if 'label_name' not in args:
+            label_name = os.path.join('data', dataset, '{}_label.txt'.format(dataset))
+        else:
+            label_name = args['label_name']
         label = np.loadtxt(label_name, dtype=int)
         if type(args['radio']) == np.ndarray or type(args['radio']) == list:
             res = np.zeros((len(embedding_filenames), 2*len(args['radio'])))
             for i, radio in enumerate(args['radio']):
                 train_id, train_label, test_id, test_label = make_train_test(label, radio)
+                print(train_id)
                 r = classification(train_id, train_label, test_id, test_label, embedding_filenames, args)
                 res[:, i] = r[:, 0]
                 res[:, i+len(args['radio'])] = r[:, 1]
