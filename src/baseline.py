@@ -51,7 +51,7 @@ def line(dataset_name, embedding_size, input_filename, output_dir, **kargs):
 def node2vec(dataset_name, embedding_size, input_filename, output_dir, **kargs):
     kargs = utils.set_default(kargs, {'p': 1, 'q': 0.5, 'num-walks': 40, 'walk-length': 40, 'window-size': 10, 'workers': 8})
     edgelist_filename = input_filename
-    output_filename = os.path.join(output_dir, "{}_{}_{}_{}_{}_{}_{}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['num-walks'], kargs['walk-length'], kargs['window-size'], kargs['p'], kargs['q']))
+    output_filename = os.path.join(output_dir, "{}_{}_{}_{}_{}_{:.4f}_{:.4f}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['num-walks'], kargs['walk-length'], kargs['window-size'], kargs['p'], kargs['q']))
     cmd = ("python2 src/baseline/node2vec/src/main.py --input {} --output {} --dimensions {} ".format(edgelist_filename, output_filename, embedding_size)+\
             " ".join(["--{} {}".format(key, value) for key, value in kargs.items()]))
     print(cmd)
@@ -60,7 +60,7 @@ def node2vec(dataset_name, embedding_size, input_filename, output_dir, **kargs):
 def node2vec_c(dataset_name, embedding_size, input_filename, output_dir, **kargs):
     kargs = utils.set_default(kargs, {'p': 1, 'q': 0.5, 'num-walks': 40, 'walk-length': 40, 'window-size': 10, 'workers': 8})
     edgelist_filename = input_filename
-    output_filename = os.path.join(output_dir, "{}_{}_{}_{}_{}_{}_{}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['num-walks'], kargs['walk-length'], kargs['window-size'], kargs['p'], kargs['q']))
+    output_filename = os.path.join(output_dir, "{}_{}_{}_{}_{}_{:.4f}_{:.4f}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['num-walks'], kargs['walk-length'], kargs['window-size'], kargs['p'], kargs['q']))
     cmd = 'node2vec -i:{} -o:{} -d:{} -r:{} -l:{} -k:{} -p:{} -q:{}'.format(edgelist_filename, output_filename, embedding_size, kargs['num-walks'], kargs['walk-length'], kargs['window-size'], kargs['p'], kargs['q'])
     print(cmd)
     os.system(cmd)

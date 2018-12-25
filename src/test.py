@@ -2,15 +2,19 @@ import numpy as np
 import os
 import collections
 import random
+from functools import reduce
+
 from sklearn import svm
 from sklearn.linear_model import LogisticRegression
 from sklearn.metrics import f1_score
 from sklearn.multiclass import OneVsRestClassifier
 from sklearn.preprocessing import MultiLabelBinarizer
 from scipy.sparse import csr_matrix
-from functools import reduce
 
 from . import utils
+
+import warnings
+warnings.filterwarnings("ignore")
 
 def sampling_edges(G, sampling, G_test=None):
     recon_flag = (G_test is None)
@@ -66,8 +70,8 @@ def make_train_test(label, radio):
     n = int(radio*len(l))
     x = np.array(list(l.keys()))
     ind = np.random.permutation(range(len(l)))
-    print(set(reduce(lambda x, y: x+y, [l[i] for i in x[ind[:n]]])))
-    print(set(reduce(lambda x, y: x+y, [l[i] for i in x[ind[n:]]])))
+    #print(set(reduce(lambda x, y: x+y, [l[i] for i in x[ind[:n]]])))
+    #print(set(reduce(lambda x, y: x+y, [l[i] for i in x[ind[n:]]])))
     return x[ind[:n]], y[ind[:n]], x[ind[n:]], y[ind[n:]]
 
 def save_result(save_filename, embedding_filenames, res):
@@ -168,7 +172,7 @@ def node_recommendation(G_train, G_test, embedding_filenames, evalution, args):
         res.append(r)
     return res
 
-def test(task, evalution, dataset, embedding_filenames, save_filename=None, **args):
+def test(task, evalution, dataset, embedding_filenames, save_filename=None, data_dir=None, **args):
     args = utils.set_default(args, {'seed': 0})
     np.random.seed(args['seed'])
     random.seed(args['seed'])
@@ -194,16 +198,15 @@ def test(task, evalution, dataset, embedding_filenames, save_filename=None, **ar
         res = link_predict(edges, labels, embedding_filenames, evalution, sampling, args)
     elif task == 'classification':
         args = utils.set_default(args, {'radio': 0.8})
-        if 'label_name' not in args:
+        if data_dir is None:
             label_name = os.path.join('data', dataset, '{}_label.txt'.format(dataset))
         else:
-            label_name = args['label_name']
+            label_name = os.path.join(data_dir, '{}_label.txt'.format(dataset))
         label = np.loadtxt(label_name, dtype=int)
         if type(args['radio']) == np.ndarray or type(args['radio']) == list:
             res = np.zeros((len(embedding_filenames), 2*len(args['radio'])))
             for i, radio in enumerate(args['radio']):
                 train_id, train_label, test_id, test_label = make_train_test(label, radio)
-                print(train_id)
                 r = classification(train_id, train_label, test_id, test_label, embedding_filenames, args)
                 res[:, i] = r[:, 0]
                 res[:, i+len(args['radio'])] = r[:, 1]
