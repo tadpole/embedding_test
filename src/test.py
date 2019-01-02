@@ -172,7 +172,7 @@ def node_recommendation(G_train, G_test, embedding_filenames, evalution, args):
         res.append(r)
     return res
 
-def test(task, evalution, dataset, embedding_filenames, save_filename=None, data_dir=None, **args):
+def test(task, evalution, dataset, embedding_filenames, save_filename=None, **args):
     args = utils.set_default(args, {'seed': 0})
     np.random.seed(args['seed'])
     random.seed(args['seed'])
@@ -198,10 +198,10 @@ def test(task, evalution, dataset, embedding_filenames, save_filename=None, data
         res = link_predict(edges, labels, embedding_filenames, evalution, sampling, args)
     elif task == 'classification':
         args = utils.set_default(args, {'radio': 0.8})
-        if data_dir is None:
+        if 'label_name' not in args:
             label_name = os.path.join('data', dataset, '{}_label.txt'.format(dataset))
         else:
-            label_name = os.path.join(data_dir, '{}_label.txt'.format(dataset))
+            label_name = args['label_name']
         label = np.loadtxt(label_name, dtype=int)
         if type(args['radio']) == np.ndarray or type(args['radio']) == list:
             res = np.zeros((len(embedding_filenames), 2*len(args['radio'])))
