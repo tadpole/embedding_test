@@ -50,7 +50,7 @@ def line(dataset_name, embedding_size, input_filename, output_dir, **kargs):
 
 def node2vec(dataset_name, embedding_size, input_filename, output_dir, **kargs):
     parm_name = ['p', 'q', 'num-walks', 'walk-length', 'window-size', 'workers']
-    kargs = utils.set_default(kargs, dict(zip(parm_name, [1, 0.5, 40, 40, 10, 8]))
+    kargs = utils.set_default(kargs, dict(zip(parm_name, [1, 0.5, 40, 40, 10, 8])))
     edgelist_filename = input_filename
     output_filename = os.path.join(output_dir, "{}_{}_{}_{}_{}_{:.4f}_{:.4f}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['num-walks'], kargs['walk-length'], kargs['window-size'], kargs['p'], kargs['q']))
     cmd = ("python2 src/baseline/node2vec/src/main.py --input {} --output {} --dimensions {} ".format(edgelist_filename, output_filename, embedding_size)+\
