@@ -177,23 +177,27 @@ def test(task, evalution, dataset, embedding_filenames, save_filename=None, **ar
     np.random.seed(args['seed'])
     random.seed(args['seed'])
     if task == 'reconstruction':
-        args = utils.set_default(args, {'sampling_mapping': None})
+        args = utils.set_default(args, {'sampling_mapping': {}})
         dataset_name = os.path.join('data', dataset, "{}.edgelist".format(dataset))
         G = utils.load_graph(dataset_name)
 
         utils.get_graph_info(G)
 
-        sampling = None if dataset_name not in args['sampling_mapping'] else args['sampling_mapping'][dataset_name]
+        sampling = None if dataset not in args['sampling_mapping'] else args['sampling_mapping'][dataset]
         edges, labels = sampling_edges(G, sampling)
         res = reconstruction(edges, labels, embedding_filenames, evalution, sampling, args)
     elif task == 'link_predict':
-        args = utils.set_default(args, {'sampling_mapping': None})
-        dataset_train_name = os.path.join('data', dataset, "{}.edgelist".format(dataset))
-        dataset_test_name = os.path.join('data', dataset, "{}_test.edgelist".format(dataset))
+        args = utils.set_default(args, {'sampling_mapping': {}})
+        if 'data_dir' not in args:
+            dataset_train_name = os.path.join('data', dataset, "graph.edgelist".format(dataset))
+            dataset_test_name = os.path.join('data', dataset, "graph_test.edgelist".format(dataset))
+        else:
+            dataset_train_name = os.path.join(args['data_dir'], 'graph.edgelist')
+            dataset_test_name = os.path.join(args['data_dir'], 'graph_test.edgelist')
         G_train = utils.load_graph(dataset_train_name)
         G_test = utils.load_graph(dataset_test_name)
 
-        sampling = None if dataset_name not in args['sampling_mapping'] else args['sampling_mapping'][dataset_name]
+        sampling = None if dataset not in args['sampling_mapping'] else args['sampling_mapping'][dataset]
         edges, labels = sampling_edges(G_train, sampling, G_test=G_test)
         res = link_predict(edges, labels, embedding_filenames, evalution, sampling, args)
     elif task == 'classification':
