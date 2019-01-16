@@ -18,7 +18,6 @@ warnings.filterwarnings("ignore")
 
 def sampling_edges(G, sampling, G_test=None):
     recon_flag = (G_test is None)
-    print(recon_flag)
     N = G.number_of_nodes()
     edges = []
     labels = []
@@ -79,7 +78,7 @@ def save_result(save_filename, embedding_filenames, res):
         os.makedirs(os.path.dirname(save_filename))
     with open(save_filename, 'w') as f:
         f_name = open("{}_names".format(save_filename), 'w')
-        print("################ save results in ", save_filename)
+        #print("################ save results in ", save_filename)
         for i, n in enumerate(embedding_filenames):
             print(os.path.basename(n), file=f_name)
             if type(res[i]) == np.ndarray or type(res[i]) == list:
@@ -107,14 +106,14 @@ def reconstruction(edges, labels, embedding_filenames, evalution, sampling, args
             x = np.arange(max_n)
             pk = positive*1.0/(x+1)
             res.append(pk)
-            print(os.path.basename(fn), '\t', pk[[10**i for i in range(5)]])
+            #print(os.path.basename(fn), '\t', pk[[10**i for i in range(5)]])
         elif evalution == 'AUC':
             rank = len(labels)-np.where(labels_ordered == 1)[0]
             M = len(rank)
             N = len(labels)-M
             auc = (np.sum(rank)-M*(M+1)/2)*1.0/M/N
             res.append(auc)
-            print(os.path.basename(fn), '\t', res[-1])
+            #print(os.path.basename(fn), '\t', res[-1])
     return res
 
 link_predict = reconstruction

@@ -5,7 +5,7 @@ from collections import namedtuple
 from . import utils
 
 
-def deepwalk(dataset_name, embedding_size, input_filename, output_dir, **kargs):
+def deepwalk(dataset_name, embedding_size, input_filename, output_dir, debug=True, **kargs):
     kargs = utils.set_default(kargs, {'number-walks': 40, 'walk-length': 40, 'window-size': 10, 'workers': 8, 'format': 'edgelist'})
     edgelist_filename = input_filename
     output_filename = os.path.join(output_dir, "{}_{}_{}_{}_{}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['number-walks'], kargs['walk-length'], kargs['window-size']))
@@ -17,7 +17,7 @@ def deepwalk(dataset_name, embedding_size, input_filename, output_dir, **kargs):
     print(cmd)
     os.system(cmd)
 
-def line(dataset_name, embedding_size, input_filename, output_dir, **kargs):
+def line(dataset_name, embedding_size, input_filename, output_dir, debug=True, **kargs):
     kargs = utils.set_default(kargs, {'negative': 5, 'samples': 100, 'threads': 8, 'order': None})
     order = kargs['order']
     edgelist_filename = input_filename
@@ -48,17 +48,20 @@ def line(dataset_name, embedding_size, input_filename, output_dir, **kargs):
         print(cmd)
         os.system(cmd)
 
-def node2vec(dataset_name, embedding_size, input_filename, output_dir, **kargs):
+def node2vec(dataset_name, embedding_size, input_filename, output_dir, debug=True, **kargs):
     parm_name = ['p', 'q', 'num-walks', 'walk-length', 'window-size', 'workers']
     kargs = utils.set_default(kargs, dict(zip(parm_name, [1, 0.5, 40, 40, 10, 8])))
     edgelist_filename = input_filename
     output_filename = os.path.join(output_dir, "{}_{}_{}_{}_{}_{:.4f}_{:.4f}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['num-walks'], kargs['walk-length'], kargs['window-size'], kargs['p'], kargs['q']))
     cmd = ("python2 src/baseline/node2vec/src/main.py --input {} --output {} --dimensions {} ".format(edgelist_filename, output_filename, embedding_size)+\
             " ".join(["--{} {}".format(p, kargs[p]) for p in parm_name]))
-    print(cmd)
+    if not debug:
+        cmd += ' > /dev/null'
+    else:
+        print(cmd)
     os.system(cmd)
 
-def node2vec_c(dataset_name, embedding_size, input_filename, output_dir, **kargs):
+def node2vec_c(dataset_name, embedding_size, input_filename, output_dir, debug=True, **kargs):
     kargs = utils.set_default(kargs, {'p': 1, 'q': 0.5, 'num-walks': 40, 'walk-length': 40, 'window-size': 10, 'workers': 8})
     edgelist_filename = input_filename
     output_filename = os.path.join(output_dir, "{}_{}_{}_{}_{}_{:.4f}_{:.4f}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['num-walks'], kargs['walk-length'], kargs['window-size'], kargs['p'], kargs['q']))
@@ -66,7 +69,7 @@ def node2vec_c(dataset_name, embedding_size, input_filename, output_dir, **kargs
     print(cmd)
     os.system(cmd)
 
-def GraRep(dataset_name, embedding_size, input_filename, output_dir, **kargs):
+def GraRep(dataset_name, embedding_size, input_filename, output_dir, debug=True, **kargs):
     kargs = utils.set_default(kargs, {'K': 4})
     edgelist_filename = input_filename
     output_filename = os.path.join(output_dir, "{}_{}_{}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['K']))
@@ -75,7 +78,7 @@ def GraRep(dataset_name, embedding_size, input_filename, output_dir, **kargs):
     with utils.cd('src/baseline/GraRep/code/core/'):
         os.system(cmd)
 
-def baseline(method, dataset_name, embedding_size, input_filename=None, output_dir=None, **kargs):
+def baseline(method, dataset_name, embedding_size, input_filename=None, output_dir=None, debug=True, **kargs):
     f = eval(method)
     ### support external I/O
     if input_filename is None:
@@ -84,7 +87,7 @@ def baseline(method, dataset_name, embedding_size, input_filename=None, output_d
         output_dir = os.path.join("embeddings", dataset_name)
     if not os.path.exists(output_dir):
         os.makedirs(output_dir)
-    f(dataset_name, embedding_size, input_filename, output_dir, **kargs)
+    f(dataset_name, embedding_size, input_filename, output_dir, debug=debug, **kargs)
 
 if __name__ == '__main__':
     datasets = ['cora', 'citeseer', 'BlogCatalog']
