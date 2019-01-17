@@ -137,7 +137,7 @@ def classification(train_id, train_label, test_id, test_label, embedding_filenam
         y_pred = csr_matrix((data, (row, col)), shape=test_label.shape)
         averages = ["micro", "macro"]
         r = [f1_score(test_label, y_pred, average=a) for a in averages]
-        print(os.path.basename(fn), '\t', r)
+        #print(os.path.basename(fn), '\t', r)
         res.append(r)
     return np.array(res)
 

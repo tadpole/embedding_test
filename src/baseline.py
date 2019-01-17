@@ -6,15 +6,19 @@ from . import utils
 
 
 def deepwalk(dataset_name, embedding_size, input_filename, output_dir, debug=True, **kargs):
-    kargs = utils.set_default(kargs, {'number-walks': 40, 'walk-length': 40, 'window-size': 10, 'workers': 8, 'format': 'edgelist'})
+    parm_name = ['number-walks', 'walk-length', 'window-size', 'workers', 'format']
+    kargs = utils.set_default(kargs, dict(zip(parm_name, [40, 40, 10, 8, 'edgelist'])))
     edgelist_filename = input_filename
     output_filename = os.path.join(output_dir, "{}_{}_{}_{}_{}".format(sys._getframe(0).f_code.co_name, embedding_size, kargs['number-walks'], kargs['walk-length'], kargs['window-size']))
-    print(edgelist_filename, output_filename, kargs)
+    #print(edgelist_filename, output_filename, kargs)
     if not os.path.exists(os.path.dirname(output_filename)):
         os.makedirs(os.path.dirname(output_filename))
-    cmd = ("deepwalk --input {} --output {} --representation-size {} ".format(edgelist_filename, output_filename, embedding_size)+\
-            " ".join(["--{} {}".format(key, value) for key, value in kargs.items()]))
-    print(cmd)
+    cmd = ("python2 -m deepwalk --input {} --output {} --representation-size {} ".format(edgelist_filename, output_filename, embedding_size)+\
+            " ".join(["--{} {}".format(p, kargs[p]) for p in parm_name]))
+    if not debug:
+        cmd += ' > /dev/null 2>&1'
+    else:
+        print(cmd)
     os.system(cmd)
 
 def line(dataset_name, embedding_size, input_filename, output_dir, debug=True, **kargs):
