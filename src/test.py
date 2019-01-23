@@ -123,6 +123,7 @@ def classification(train_id, train_label, test_id, test_label, embedding_filenam
     for fn in embedding_filenames:
         emb = utils.load_embeddings(fn)
         cf = OneVsRestClassifier(svm.SVC(probability=True))
+        #cf = OneVsRestClassifier(LogisticRegression())
         cf.fit(emb[train_id], train_label)
         y_prob = cf.predict_proba(emb[test_id])
         top_k_list = [r.nnz for r in test_label]

@@ -9,10 +9,11 @@ def load_wv(filename, index_from_one=False):
         l = f.readline().split()
         total_num, embedding_size = int(l[0]), int(l[1])
         ls = list(map(lambda x: x.strip().split(), f.readlines()))
-        index_from_one = min([int(line[0]) for line in ls])
-        res = np.zeros((total_num, embedding_size), dtype=float)
+        tn = max([int(line[0]) for line in ls])
+        assert tn == total_num or tn+1 == total_num
+        res = np.zeros((tn+1, embedding_size), dtype=float)
         for line in ls:
-            res[int(line[0])-index_from_one] = list(map(float, line[1:]))
+            res[int(line[0])] = list(map(float, line[1:]))
         f.close()
     return res
 
@@ -120,4 +121,5 @@ class cd:
 
 
 if __name__ == '__main__':
-    split_dataset('cora')
+    #split_dataset('cora')
+    print(load_wv('/home/tuke/mle/embeddings/BlogCatalog_0.8/sampled/s0/deepwalk_64_2_2_2'))
