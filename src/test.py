@@ -55,8 +55,8 @@ def sampling_edges(G, sampling, G_test=None):
         pos = sum(labels)
         neg = len(labels)-pos
         print("sampling: pos: {}, neg: {}".format(pos, neg))
-    edges = np.array(edges)
-    labels = np.array(labels)
+    edges = np.array(edges).astype(int)
+    labels = np.array(labels).astype(int)
     return edges, labels
 
 def make_train_test(label, radio):
@@ -122,8 +122,8 @@ def classification(train_id, train_label, test_id, test_label, embedding_filenam
     res = []
     for fn in embedding_filenames:
         emb = utils.load_embeddings(fn)
-        cf = OneVsRestClassifier(svm.SVC(probability=True))
-        #cf = OneVsRestClassifier(LogisticRegression())
+        #cf = OneVsRestClassifier(svm.SVC(probability=True))
+        cf = OneVsRestClassifier(LogisticRegression())
         cf.fit(emb[train_id], train_label)
         y_prob = cf.predict_proba(emb[test_id])
         top_k_list = [r.nnz for r in test_label]
