@@ -82,6 +82,19 @@ def GraRep(dataset_name, embedding_size, input_filename, output_dir, debug=True,
     with utils.cd('src/baseline/GraRep/code/core/'):
         os.system(cmd)
 
+def AROPE(dataset_name, embedding_size, input_filename, output_dir, debug=True, **kargs):
+    kargs = utils.set_default(kargs, {'order': 4, 'w1': 1.0, 'w2': 1.0, 'w3': 1.0, 'w4': 1.0})
+    edgelist_filename = input_filename
+    output_filename = os.path.join(output_dir, "{}_{}_".format(sys._getframe(0).f_code.co_name, embedding_size)+'_'.join(['{:.4f}'.format(kargs['w{}'.format(i+1)]) for i in range(kargs['order'])]))
+    output_filename_2 = os.path.join(output_dir, "{}_2_{}_".format(sys._getframe(0).f_code.co_name, embedding_size)+'_'.join(['{:.4f}'.format(kargs['w{}'.format(i+1)]) for i in range(kargs['order'])]))
+    cmd = "matlab -nosplash -nodisplay -nodesktop -nojvm -r \"AROPE_CMD('{}','{}', '{}', {}, {}, [{}]);exit\"".format(os.path.abspath(edgelist_filename), os.path.abspath(output_filename), os.path.abspath(output_filename_2), embedding_size, kargs['order'], ', '.join(['{:.4f}'.format(kargs['w{}'.format(i+1)]) for i in range(kargs['order'])]))
+    if not debug:
+        cmd += ' > /dev/null'
+    else:
+        print(cmd)
+    with utils.cd('src/baseline/AROPE'):
+        os.system(cmd)
+
 def baseline(method, dataset_name, embedding_size, input_filename=None, output_dir=None, debug=True, **kargs):
     f = eval(method)
     ### support external I/O
@@ -98,6 +111,7 @@ if __name__ == '__main__':
     datasets = [x+'_0.8' for x in datasets]
     methods  = ['node2vec']
     emd_size = 128
+    """
     for method in methods:
         for d in datasets:
             print("###############################")
@@ -116,3 +130,4 @@ if __name__ == '__main__':
                         baseline(method, d, emd_size, **{'num-walks': 10, 'walk-length': 80, 'window-size':10, 'p': p, 'q':q})
             elif method == 'GraRep':
                 baseline(method, d, emd_size, **{'K': 4})
+    """

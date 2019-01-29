@@ -36,11 +36,15 @@ def load_mat(filename):
 def load_SDNE(filename):
     return sio.loadmat(filename)['embedding']
 
+def load_AROPE(filename):
+    return sio.loadmat(filename)['U']
+
 def load_embeddings(filename, type_=None):
     if type_ is None:
         name = os.path.basename(filename)
         ### ugly code, may fix it by checking suffix
-        default_type = {'deepwalk': 'wv', 'line': 'wv', 'node2vec': 'wv', 'line1': 'wv', 'line2': 'wv', 'SDNE': 'SDNE'}
+        default_type = {'deepwalk': 'wv', 'line': 'wv', 'node2vec': 'wv',
+                    'line1': 'wv', 'line2': 'wv', 'SDNE': 'SDNE', 'AROPE': 'AROPE'}
         type_ = default_type.get(name.split('_')[0], 'mat')
     res = eval("load_{}".format(type_))(filename)
     return res
