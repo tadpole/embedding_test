@@ -48,7 +48,7 @@ def sampling_edges(G, sampling, G_test=None):
                 else:
                     labels.append(1 if G_test.has_edge(i, j) else 0)
                 n += 1
-                if n % 100000:
+                if n % 1000000 == 0:
                     print("sampling: {}/{}".format(n, sampling))
                 if n >= sampling:
                     break
@@ -183,7 +183,8 @@ def test(task, evalution, dataset, embedding_filenames, save_filename=None, **ar
 
         utils.get_graph_info(G)
 
-        sampling = None if dataset not in args['sampling_mapping'] else args['sampling_mapping'][dataset]
+        dataset_root = dataset.split('_')[0]
+        sampling = None if dataset_root not in args['sampling_mapping'] else args['sampling_mapping'][dataset_root]
         edges, labels = sampling_edges(G, sampling)
         res = reconstruction(edges, labels, embedding_filenames, evalution, sampling, args)
     elif task == 'link_predict':
@@ -197,7 +198,9 @@ def test(task, evalution, dataset, embedding_filenames, save_filename=None, **ar
         G_train = utils.load_graph(dataset_train_name)
         G_test = utils.load_graph(dataset_test_name)
 
-        sampling = None if dataset not in args['sampling_mapping'] else args['sampling_mapping'][dataset]
+        dataset_root = dataset.split('_')[0]
+        sampling = None if dataset_root not in args['sampling_mapping'] else args['sampling_mapping'][dataset_root]
+        #print("sampling: {} {} {}".format(sampling, dataset, args))
         edges, labels = sampling_edges(G_train, sampling, G_test=G_test)
         res = link_predict(edges, labels, embedding_filenames, evalution, sampling, args)
     elif task == 'classification':
