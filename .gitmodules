@@ -1,0 +1,3 @@
+[submodule "src/baseline/gcn"]
+	path = src/baseline/gcn
+	url = git@github.com:tadpole/gcn.git
